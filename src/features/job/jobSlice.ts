@@ -1,13 +1,40 @@
-import type { PayloadAction } from "@reduxjs/toolkit";
 import { createAppSlice } from "../../app/createAppSlice";
+import { fetchJobs } from "./jobAPI";
+
+const STATUS = {
+  IDLE: "idle",
+  LOADING: "loading",
+  FAILED: "failed",
+};
+
+interface JobDetails {
+  companyName: string | null;
+  jdLink: string | null;
+  jdUid: string;
+  jobDetailsFromCompany: string | null;
+  jobRole: string | null;
+  location: string | null;
+  logoUrl: string | null;
+  maxExp: number | null;
+  maxJdSalary: number | null;
+  minExp: number | null;
+  minJdSalary: number | null;
+  salaryCurrencyCode: string | null;
+}
 
 export interface JobSliceState {
-  value: number;
+  jobList: JobDetails[] | [];
+  limit: number;
+  offset: number;
+  totalCount: number;
   status: "idle" | "loading" | "failed";
 }
 
 const initialState: JobSliceState = {
-  value: 0,
+  jobList: [],
+  limit: 10,
+  offset: 0,
+  totalCount: 0,
   status: "idle",
 };
 
@@ -15,47 +42,49 @@ export const jobSlice = createAppSlice({
   name: "job",
   initialState,
   reducers: (create) => ({
-    increment: create.reducer((state) => {
-      state.value += 1;
+    setTotalCount: create.reducer((state, { payload }) => {
+      state.totalCount = payload;
     }),
-    decrement: create.reducer((state) => {
-      state.value -= 1;
+    setAddJobs: create.reducer((state, { payload }) => {
+      state.jobList = state.offset
+        ? [...state.jobList, ...payload]
+        : [...payload];
     }),
-    incrementByAmount: create.reducer(
-      (state, action: PayloadAction<number>) => {
-        state.value += action.payload;
+    setStatus: create.reducer((state, { payload }) => {
+      state.status = payload;
+    }),
+    getJob: create.asyncThunk(async (offset: number, thunkAPI) => {
+      thunkAPI.dispatch(jobSlice.actions.setStatus(STATUS.LOADING));
+      try {
+        const response = await fetchJobs(offset);
+        thunkAPI.dispatch(jobSlice.actions.setAddJobs(response.jdList));
+        thunkAPI.dispatch(jobSlice.actions.setTotalCount(response.totalCount));
+        thunkAPI.dispatch(jobSlice.actions.setStatus(STATUS.IDLE));
+      } catch (error) {
+        thunkAPI.dispatch(jobSlice.actions.setStatus(STATUS.FAILED));
       }
-    ),
-
-    incrementAsync: create.asyncThunk(
-      async (amount: number) => {
-        //TODO: add fetch
-        // const response = await fetchJob(amount);
-        console.log(amount);
-        return 1;
-      },
-      {
-        pending: (state) => {
-          state.status = "loading";
-        },
-        fulfilled: (state, action) => {
-          state.status = "idle";
-          state.value += action.payload;
-        },
-        rejected: (state) => {
-          state.status = "failed";
-        },
-      }
-    ),
+    }),
   }),
 
   selectors: {
-    selectJob: (job) => job.value,
+    selectJob: (job) => job.jobList,
     selectStatus: (job) => job.status,
+    selectTotalCount: (job) => job.totalCount,
   },
 });
 
-export const { decrement, increment, incrementByAmount, incrementAsync } =
-  jobSlice.actions;
+export const getJob =
+  (offset: number): AppThunk =>
+  async (dispatch) => {
+    dispatch(jobSlice.actions.setStatus(STATUS.LOADING));
+    try {
+      const response = await fetchJobs(offset);
+      dispatch(jobSlice.actions.setAddJobs(response.jdList));
+      dispatch(jobSlice.actions.setTotalCount(response.totalCount));
+      dispatch(jobSlice.actions.setStatus(STATUS.IDLE));
+    } catch (error) {
+      dispatch(jobSlice.actions.setStatus(STATUS.FAILED));
+    }
+  };
 
-export const { selectJob, selectStatus } = jobSlice.selectors;
+export const { selectJob, selectStatus, selectTotalCount } = jobSlice.selectors;
