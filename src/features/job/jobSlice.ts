@@ -7,7 +7,7 @@ const STATUS = {
   FAILED: "failed",
 };
 
-interface JobDetails {
+export interface JobDetailsType {
   companyName: string | null;
   jdLink: string | null;
   jdUid: string;
@@ -23,7 +23,7 @@ interface JobDetails {
 }
 
 export interface JobSliceState {
-  jobList: JobDetails[] | [];
+  jobList: JobDetailsType[] | [];
   limit: number;
   offset: number;
   totalCount: number;
@@ -53,16 +53,8 @@ export const jobSlice = createAppSlice({
     setStatus: create.reducer((state, { payload }) => {
       state.status = payload;
     }),
-    getJob: create.asyncThunk(async (offset: number, thunkAPI) => {
-      thunkAPI.dispatch(jobSlice.actions.setStatus(STATUS.LOADING));
-      try {
-        const response = await fetchJobs(offset);
-        thunkAPI.dispatch(jobSlice.actions.setAddJobs(response.jdList));
-        thunkAPI.dispatch(jobSlice.actions.setTotalCount(response.totalCount));
-        thunkAPI.dispatch(jobSlice.actions.setStatus(STATUS.IDLE));
-      } catch (error) {
-        thunkAPI.dispatch(jobSlice.actions.setStatus(STATUS.FAILED));
-      }
+    incrementOffset: create.reducer((state) => {
+      state.offset += 10;
     }),
   }),
 
@@ -70,6 +62,7 @@ export const jobSlice = createAppSlice({
     selectJob: (job) => job.jobList,
     selectStatus: (job) => job.status,
     selectTotalCount: (job) => job.totalCount,
+    selectOffset: (job) => job.offset,
   },
 });
 
@@ -80,6 +73,7 @@ export const getJob =
     try {
       const response = await fetchJobs(offset);
       dispatch(jobSlice.actions.setAddJobs(response.jdList));
+      dispatch(jobSlice.actions.incrementOffset());
       dispatch(jobSlice.actions.setTotalCount(response.totalCount));
       dispatch(jobSlice.actions.setStatus(STATUS.IDLE));
     } catch (error) {
@@ -87,4 +81,5 @@ export const getJob =
     }
   };
 
-export const { selectJob, selectStatus, selectTotalCount } = jobSlice.selectors;
+export const { selectJob, selectStatus, selectTotalCount, selectOffset } =
+  jobSlice.selectors;
