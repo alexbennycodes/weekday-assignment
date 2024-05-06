@@ -2,17 +2,8 @@ import { Box, CircularProgress, Grid } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import JobCard from "../../components/JobCard";
-import Select from "../../components/Select";
-import Input from "../../components/Input";
+import JobsFilter from "../../components/JobsFilter";
 import useInfiniteScroll from "../../hooks/useInfiniteScroll";
-import {
-  EXP_LEVELS_OPTIONS,
-  MIN_BASE_OPTIONS,
-  NUMBER_OF_EMPLOYEES_OPTIONS,
-  REMOTE_OPTIONS,
-  ROLES_OPTIONS,
-  TECH_STACK_OPTIONS,
-} from "../../utils/constants";
 import {
   JobDetailsType,
   getJob,
@@ -121,119 +112,13 @@ const Job = () => {
 
   return (
     <div>
-      <Box
-        sx={{
-          display: "flex",
-          gap: "8px",
-          marginBottom: "1rem",
-          flexWrap: "wrap",
-          minHeight: "55px",
-        }}
+      <JobsFilter setFilter={setFilter} filter={filter} />
+      <Grid
+        container
+        spacing={4}
+        columns={{ xs: 4, sm: 8, md: 12 }}
+        sx={{ paddingY: 5 }}
       >
-        <Select
-          options={ROLES_OPTIONS}
-          isSearchable
-          isClearable
-          isMulti
-          placeholder="Roles"
-          styles={{
-            container: (styles) => ({
-              ...styles,
-              minWidth: "150px",
-            }),
-          }}
-          onChange={(e) =>
-            setFilter((prev) => ({
-              ...prev,
-              roles: e,
-            }))
-          }
-          value={filter.roles}
-          label="Roles"
-        />
-        <Select
-          options={NUMBER_OF_EMPLOYEES_OPTIONS}
-          isSearchable
-          isClearable
-          isMulti
-          placeholder="Number of employees"
-          onChange={(e) =>
-            setFilter((prev) => ({
-              ...prev,
-              noOfEmployees: e,
-            }))
-          }
-          value={filter.noOfEmployees}
-          label="No of employees"
-        />
-        <Select
-          options={EXP_LEVELS_OPTIONS}
-          isSearchable
-          isClearable
-          placeholder="Experience"
-          onChange={(e) =>
-            setFilter((prev) => ({
-              ...prev,
-              experience: e,
-            }))
-          }
-          value={filter.experience}
-          label="Experience"
-        />
-        <Select
-          options={REMOTE_OPTIONS}
-          isSearchable
-          isClearable
-          isMulti
-          placeholder="Remote"
-          onChange={(e) =>
-            setFilter((prev) => ({
-              ...prev,
-              remote: e,
-            }))
-          }
-          value={filter.remote}
-          label="Remote"
-        />
-        <Select
-          options={TECH_STACK_OPTIONS}
-          isSearchable
-          isClearable
-          isMulti
-          placeholder="Tech Stack"
-          onChange={(e) =>
-            setFilter((prev) => ({
-              ...prev,
-              techStack: e,
-            }))
-          }
-          value={filter.techStack}
-          label="Tech Stack"
-        />
-        <Select
-          options={MIN_BASE_OPTIONS}
-          isSearchable
-          isClearable
-          placeholder="Minimum Base Pay Salary"
-          onChange={(e: { label: "string"; value: number }) =>
-            setFilter((prev) => ({
-              ...prev,
-              minBasePay: e,
-            }))
-          }
-          value={filter.minBasePay}
-          label="Min Base Pay"
-        />
-        <Input
-          placeholder="Search Company Name"
-          label="Company Name"
-          value={filter.searchTerm}
-          onChange={(e) =>
-            setFilter((prev) => ({ ...prev, searchTerm: e.target.value }))
-          }
-        />
-      </Box>
-      <Grid container spacing={4} columns={{ xs: 4, sm: 8, md: 12 }}>
         {filteredJobList.map((job: JobDetailsType) => (
           <Grid item xs={4} sm={4} md={4} key={job.jdUid}>
             <JobCard

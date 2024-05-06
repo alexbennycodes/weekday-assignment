@@ -18,6 +18,8 @@ function capitalize(string: string) {
 }
 
 import "./style.css";
+import ShowMoreDialog from "./ShowMoreDialog";
+import { useState } from "react";
 
 const ApplyButton = styled(Button)(() => ({
   backgroundColor: "#55EFC4",
@@ -84,6 +86,15 @@ const JobCard = ({
   minJdSalary: number | null;
   salaryCurrencyCode: string | null;
 }) => {
+  const [open, setOpen] = useState(false);
+
+  const handleDialogOpen = () => {
+    setOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setOpen(false);
+  };
   return (
     <StyledCard variant="outlined">
       <CardHeader
@@ -127,7 +138,9 @@ const JobCard = ({
             {jobDetailsFromCompany}
             <span className="white_gradient" />
           </p>
-          <button type="button">Show more</button>
+          <button type="button" onClick={handleDialogOpen}>
+            Show more
+          </button>
         </div>
         <CardContent sx={{ paddingX: 0 }}>
           <Typography
@@ -152,6 +165,11 @@ const JobCard = ({
           </Box>
         </CardActions>
       </CardContent>
+      <ShowMoreDialog
+        open={open}
+        handleClose={handleDialogClose}
+        aboutUs={jobDetailsFromCompany}
+      />
     </StyledCard>
   );
 };
