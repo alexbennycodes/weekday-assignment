@@ -1,11 +1,11 @@
 import { Box, Typography } from "@mui/material";
 
-const Input = ({ label = "", value = null, ...props }) => {
+const Input = ({ label = "", value = "", ...props }) => {
   return (
     <Box
       sx={{ display: "flex", flexDirection: "column", justifyContent: "end" }}
     >
-      {value && <Typography sx={{ fontSize: 11 }}>{label}</Typography>}
+      {value !== "" && <Typography sx={{ fontSize: 11 }}>{label}</Typography>}
       <input
         style={{
           fontSize: "12px",
@@ -15,6 +15,7 @@ const Input = ({ label = "", value = null, ...props }) => {
           borderRadius: "4px",
           height: 32,
         }}
+        value={value}
         {...props}
       />
     </Box>

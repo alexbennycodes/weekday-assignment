@@ -1,8 +1,7 @@
-import { JobFilter } from "../features/job/Job";
-import { JobDetailsType } from "../features/job/jobSlice";
+import { JobDetailsType, JobFilterType, SelectOptionType } from "./types";
 
 export const filterJobs = (
-  filter: JobFilter,
+  filter: JobFilterType,
   jobList: JobDetailsType[] = []
 ) => {
   return jobList.filter((job) => {
@@ -41,7 +40,11 @@ export const filterJobs = (
       if (job.location === "remote") locationType = "remote";
       else if (job.location === "hybrid") locationType = "hybrid";
       else locationType = "inOffice";
-      if (!filter.remote.map((option) => option.value).includes(locationType)) {
+      if (
+        !filter.remote
+          .map((option: SelectOptionType) => option.value)
+          .includes(locationType)
+      ) {
         return false;
       }
     }

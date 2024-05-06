@@ -1,85 +1,63 @@
 import { createAppSlice } from "../../app/createAppSlice";
+import { JobDetailsType, JobSliceState, STATUS } from "../../utils/types";
 import { fetchJobs } from "./jobAPI";
-
-export const STATUS = {
-  IDLE: "idle",
-  LOADING: "loading",
-  FAILED: "failed",
-};
-
-export interface JobDetailsType {
-  companyName: string | null;
-  jdLink: string | null;
-  jdUid: string;
-  jobDetailsFromCompany: string | null;
-  jobRole: string | null;
-  location: string | null;
-  logoUrl: string | null;
-  maxExp: number | null;
-  maxJdSalary: number | null;
-  minExp: number | null;
-  minJdSalary: number | null;
-  salaryCurrencyCode: string | null;
-}
-
-export interface JobSliceState {
-  jobList: JobDetailsType[] | [];
-  limit: number;
-  offset: number;
-  totalCount: number;
-  status: "idle" | "loading" | "failed";
-}
 
 const initialState: JobSliceState = {
   jobList: [],
   limit: 12,
   offset: 0,
   totalCount: 0,
-  status: "idle",
+  status: STATUS.IDLE,
 };
 
 export const jobSlice = createAppSlice({
   name: "job",
   initialState,
   reducers: (create) => ({
-    setTotalCount: create.reducer((state, { payload }) => {
+    setTotalCount: create.reducer((state, { payload }: { payload: number }) => {
       state.totalCount = payload;
     }),
-    setAddJobs: create.reducer((state, { payload }) => {
-      state.jobList = state.offset
-        ? [...state.jobList, ...payload]
-        : [...payload];
-    }),
-    setStatus: create.reducer((state, { payload }) => {
-      state.status = payload;
-    }),
+    setAddJobs: create.reducer(
+      (state, { payload }: { payload: JobDetailsType[] }) => {
+        state.jobList = state.offset
+          ? [...state.jobList, ...payload]
+          : [...payload];
+      }
+    ),
+    setStatus: create.reducer(
+      (
+        state,
+        { payload }: { payload: (typeof STATUS)[keyof typeof STATUS] }
+      ) => {
+        state.status = payload;
+      }
+    ),
     incrementOffset: create.reducer((state) => {
       state.offset += 12;
+    }),
+    getJob: create.asyncThunk(async (offset: number, { dispatch }) => {
+      dispatch(jobSlice.actions.setStatus(STATUS.LOADING));
+      try {
+        const response = await fetchJobs(offset);
+        dispatch(jobSlice.actions.setAddJobs(response.jdList));
+        dispatch(jobSlice.actions.incrementOffset());
+        dispatch(jobSlice.actions.setTotalCount(response.totalCount));
+        dispatch(jobSlice.actions.setStatus(STATUS.IDLE));
+      } catch (error) {
+        dispatch(jobSlice.actions.setStatus(STATUS.FAILED));
+      }
     }),
   }),
 
   selectors: {
-    selectJob: (job) => job.jobList,
-    selectStatus: (job) => job.status,
-    selectTotalCount: (job) => job.totalCount,
-    selectOffset: (job) => job.offset,
+    selectJob: (state) => state.jobList,
+    selectStatus: (state) => state.status,
+    selectTotalCount: (state) => state.totalCount,
+    selectOffset: (state) => state.offset,
   },
 });
 
-export const getJob =
-  (offset: number): AppThunk =>
-  async (dispatch) => {
-    dispatch(jobSlice.actions.setStatus(STATUS.LOADING));
-    try {
-      const response = await fetchJobs(offset);
-      dispatch(jobSlice.actions.setAddJobs(response.jdList));
-      dispatch(jobSlice.actions.incrementOffset());
-      dispatch(jobSlice.actions.setTotalCount(response.totalCount));
-      dispatch(jobSlice.actions.setStatus(STATUS.IDLE));
-    } catch (error) {
-      dispatch(jobSlice.actions.setStatus(STATUS.FAILED));
-    }
-  };
+export const { getJob } = jobSlice.actions;
 
 export const { selectJob, selectStatus, selectTotalCount, selectOffset } =
   jobSlice.selectors;

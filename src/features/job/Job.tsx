@@ -5,25 +5,14 @@ import JobCard from "../../components/JobCard";
 import JobsFilter from "../../components/JobsFilter";
 import useInfiniteScroll from "../../hooks/useInfiniteScroll";
 import { filterJobs } from "../../utils/filterJobs";
+import { JobDetailsType, JobFilterType, STATUS } from "../../utils/types";
 import {
-  JobDetailsType,
-  STATUS,
   getJob,
   selectJob,
   selectOffset,
   selectStatus,
   selectTotalCount,
 } from "./jobSlice";
-
-export interface JobFilter {
-  roles: { value: string; label: string }[];
-  noOfEmployees: { value: string; label: string }[];
-  experience: { value: number; label: string } | null;
-  remote: { value: string; label: string }[];
-  techStack: { value: string; label: string }[];
-  minBasePay: { value: number; label: string } | null;
-  searchTerm: string;
-}
 
 const Job = () => {
   const jobList = useAppSelector(selectJob);
@@ -32,7 +21,7 @@ const Job = () => {
   const totalCount = useAppSelector(selectTotalCount);
   const dispatch = useAppDispatch();
 
-  const [filter, setFilter] = useState<JobFilter>({
+  const [filter, setFilter] = useState<JobFilterType>({
     roles: [],
     noOfEmployees: [],
     experience: null,

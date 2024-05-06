@@ -3,10 +3,10 @@ import { useEffect, useRef } from "react";
 type CallbackFunction = () => void;
 
 const useInfiniteScroll = (
-  callback: CallbackFunction,
-  isLoading: boolean,
-  hasMore: boolean,
-  stop: boolean
+  callback: CallbackFunction, // Callback function to be executed on scroll
+  isLoading: boolean, // Boolean indicating whether data is currently being loaded
+  hasMore: boolean, // Boolean indicating whether there is more data to load
+  stop: boolean // Boolean indicating whether to stop observing scroll events
 ): React.MutableRefObject<HTMLDivElement | null> => {
   const observerTarget = useRef<HTMLDivElement | null>(null);
 
@@ -16,16 +16,18 @@ const useInfiniteScroll = (
       (entries) => {
         if (isLoading || !hasMore || stop) return;
         if (entries[0].isIntersecting) {
+          // Execute the callback function when target element is intersecting
           callback();
         }
       },
-      { threshold: 1 }
+      { threshold: 1 } // Set threshold to 1 to trigger when target is in view
     );
 
     if (target) {
       observer.observe(target);
     }
 
+    // Cleanup function to stop observing when component unmounts or target changes
     return () => {
       if (target) {
         observer.unobserve(target);
