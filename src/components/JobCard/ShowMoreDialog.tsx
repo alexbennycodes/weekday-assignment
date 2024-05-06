@@ -4,7 +4,15 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 
-export default function ShowMoreDialog({ open, handleClose, aboutUs }) {
+export default function ShowMoreDialog({
+  open,
+  handleClose,
+  aboutUs,
+}: {
+  open: boolean;
+  handleClose: () => void;
+  aboutUs: string;
+}) {
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md">
       <Box

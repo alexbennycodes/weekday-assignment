@@ -101,7 +101,7 @@ const JobCard = ({
         avatar={
           <Avatar
             sx={{ width: 40, height: 40 }}
-            src={logoUrl}
+            src={logoUrl || "/avatar-fallback.svg"}
             variant="square"
           />
         }
@@ -165,10 +165,11 @@ const JobCard = ({
           </Box>
         </CardActions>
       </CardContent>
+
       <ShowMoreDialog
         open={open}
         handleClose={handleDialogClose}
-        aboutUs={jobDetailsFromCompany}
+        aboutUs={jobDetailsFromCompany || ""}
       />
     </StyledCard>
   );

@@ -52,8 +52,8 @@ const Job = () => {
       // Filter by experience
       if (
         filter.experience !== null &&
-        (job.minExp > filter.experience.value ||
-          job.maxExp < filter.experience.value)
+        (job?.minExp > filter.experience.value ||
+          job?.maxExp < filter.experience.value)
       ) {
         return false;
       }

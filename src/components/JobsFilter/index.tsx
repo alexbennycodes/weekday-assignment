@@ -7,10 +7,15 @@ import {
   ROLES_OPTIONS,
   TECH_STACK_OPTIONS,
 } from "../../utils/constants";
-import Select from "../Select";
+import { debounce } from "../../utils/debounce";
 import Input from "../Input";
+import Select from "../Select";
 
 const JobsFilter = ({ setFilter, filter }) => {
+  const debouncedHandleSearch = debounce((searchTerm) => {
+    setFilter((prev) => ({ ...prev, searchTerm }));
+  });
+
   return (
     <Box
       sx={{
@@ -119,9 +124,7 @@ const JobsFilter = ({ setFilter, filter }) => {
         placeholder="Search Company Name"
         label="Company Name"
         value={filter.searchTerm}
-        onChange={(e) =>
-          setFilter((prev) => ({ ...prev, searchTerm: e.target.value }))
-        }
+        onChange={(e) => debouncedHandleSearch(e.target.value)}
       />
     </Box>
   );
