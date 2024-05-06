@@ -1,9 +1,7 @@
-import { Button } from "@mui/material";
-import Box from "@mui/material/Box";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import Paper from "@mui/material/Paper";
-import { JobDetailsType } from "../features/job/jobSlice";
+import { Box, Button, Card, CardContent, Paper } from "@mui/material";
+import { JobDetailsType } from "../../features/job/jobSlice";
+
+import "./style.css";
 
 const JobCard = ({ job }: { job: JobDetailsType }) => {
   return (
@@ -12,6 +10,7 @@ const JobCard = ({ job }: { job: JobDetailsType }) => {
         borderRadius: "20px",
         overflow: "hidden",
         border: "1px solid rgba(0, 0, 0, 0.12)",
+        height: "100%",
       }}
     >
       <Card variant="outlined" className="job_card">
