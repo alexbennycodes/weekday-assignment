@@ -1,4 +1,4 @@
-import { Alert, Box, CircularProgress, Grid } from "@mui/material";
+import { Alert, Box, CircularProgress, Grid, Typography } from "@mui/material";
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import JobCard from "../../components/JobCard";
@@ -87,6 +87,25 @@ const Job = () => {
           <Grid item xs={4} sm={4} md={4}>
             {/* Intersection Observer Target */}
             <div ref={observerTarget}></div>
+          </Grid>
+        )}
+
+        {status !== STATUS.LOADING && totalCount <= jobList.length && (
+          <Grid item xs={4} sm={8} md={12}>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "20px",
+              }}
+            >
+              <img src="/nothing-found.png" width={150} height={150} />
+              <Typography sx={{ fontSize: "1rem", fontWeight: 600 }}>
+                No Jobs available for this category at the moment
+              </Typography>
+            </Box>
           </Grid>
         )}
       </Grid>

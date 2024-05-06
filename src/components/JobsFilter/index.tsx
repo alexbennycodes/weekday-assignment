@@ -132,9 +132,9 @@ const JobsFilter: React.FC<Props> = ({ setFilter, filter }) => {
         placeholder="Search Company Name"
         label="Company Name"
         value={filter.searchTerm || ""}
-        onChange={(e: ChangeEvent<HTMLInputElement>) =>
-          debouncedHandleSearch(e.target.value)
-        }
+        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+          debouncedHandleSearch(e.target.value);
+        }}
       />
     </Box>
   );

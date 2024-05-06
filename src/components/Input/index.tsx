@@ -15,7 +15,6 @@ const Input = ({ label = "", value = "", ...props }) => {
           borderRadius: "4px",
           height: 32,
         }}
-        value={value}
         {...props}
       />
     </Box>

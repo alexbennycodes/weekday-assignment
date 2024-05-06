@@ -14,7 +14,7 @@ export function debounce<F extends AnyFunction>(
     // Clear any existing timeouts to prevent multiple executions
     if (timeoutId !== undefined) {
       clearTimeout(timeoutId);
-    }    // creates a new timeout to execute  after 'wait' ms
+    } // creates a new timeout to execute  after 'wait' ms
     timeoutId = setTimeout(() => func(...args), wait) as ReturnType<
       typeof setTimeout
     >;
