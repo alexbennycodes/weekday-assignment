@@ -56,7 +56,10 @@ export const TECH_STACK_OPTIONS: { value: string; label: string }[] = [
   { value: "react", label: "React" },
 ];
 
-export const ROLES_OPTIONS: { value: string; label: string }[] = [
+export const ROLES_OPTIONS: {
+  label: string;
+  options: { value: string; label: string }[];
+}[] = [
   {
     label: "Engineering",
     options: [

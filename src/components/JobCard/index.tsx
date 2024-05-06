@@ -1,54 +1,158 @@
-import { Box, Button, Card, CardContent, Paper } from "@mui/material";
-import { JobDetailsType } from "../../features/job/jobSlice";
+import {
+  Avatar,
+  Box,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
+  Typography,
+  styled,
+} from "@mui/material";
+
+function capitalize(string: string) {
+  return string
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
 
 import "./style.css";
 
-const JobCard = ({ job }: { job: JobDetailsType }) => {
+const ApplyButton = styled(Button)(() => ({
+  backgroundColor: "#55EFC4",
+  color: "#000000",
+  fontSize: "16px",
+  fontWeight: 400,
+  borderRadius: 7,
+  width: "100%",
+  boxShadow: "none",
+  textTransform: "unset",
+  "&:hover": {
+    backgroundColor: "#55EFC4",
+    boxShadow: "none",
+  },
+}));
+
+const ReferralButton = styled(Button)(() => ({
+  backgroundColor: "rgb(73, 67, 218)",
+  color: "#fff",
+  fontSize: "16px",
+  fontWeight: 400,
+  borderRadius: 7,
+  width: "100%",
+  boxShadow: "none",
+  textTransform: "unset",
+  marginTop: "8px",
+  display: "inline-flex",
+  gap: 8,
+  "&:hover": {
+    backgroundColor: "rgb(73, 67, 218)",
+    boxShadow: "none",
+  },
+}));
+
+const StyledCard = styled(Card)(() => ({
+  borderRadius: 20,
+  padding: 0,
+  overflow: "hidden",
+  boxShadow: "rgba(0, 0, 0, 0.25) 0px 1px 4px 0px",
+  "&:hover": {
+    transition: "all 0.2s ease-in-out",
+    transform: "scale(1.01)",
+  },
+}));
+
+const JobCard = ({
+  companyName,
+  jobDetailsFromCompany,
+  jobRole,
+  location,
+  logoUrl,
+  maxJdSalary,
+  minExp,
+  minJdSalary,
+  salaryCurrencyCode,
+}: {
+  companyName: string | null;
+  jobDetailsFromCompany: string | null;
+  jobRole: string | null;
+  location: string | null;
+  logoUrl: string | null;
+  maxJdSalary: number | null;
+  minExp: number | null;
+  minJdSalary: number | null;
+  salaryCurrencyCode: string | null;
+}) => {
   return (
-    <Paper
-      style={{
-        borderRadius: "20px",
-        overflow: "hidden",
-        border: "1px solid rgba(0, 0, 0, 0.12)",
-        height: "100%",
-      }}
-    >
-      <Card variant="outlined" className="job_card">
-        <CardContent className="card_content" sx={{ padding: "29px 21px" }}>
-          <Box sx={{ display: "flex", gap: "0.5rem" }}>
-            {job.logoUrl && <img src={job.logoUrl} />}
-            <div>
-              <h3 className="company_name">{job.companyName}</h3>
-              <h2 className="job_role">{job.jobRole}</h2>
-              <p className="cards_sub_text">{job.location}</p>
-            </div>
-          </Box>
-          <p className="card_salary">
-            Estimated Salary: {job.salaryCurrencyCode === "USD" ? "$" : "₹"}{" "}
-            {job.minJdSalary || 0} - {job.maxJdSalary}
-            {job.salaryCurrencyCode === "₹" ? "LPA" : "K"}
+    <StyledCard variant="outlined">
+      <CardHeader
+        avatar={
+          <Avatar
+            sx={{ width: 40, height: 40 }}
+            src={logoUrl}
+            variant="square"
+          />
+        }
+        title={
+          <Typography sx={{ color: "#8b8b8b", fontSize: 13, fontWeight: 600 }}>
+            {companyName}
+          </Typography>
+        }
+        subheader={
+          <>
+            {jobRole && (
+              <Typography sx={{ fontSize: 13 }}>
+                {capitalize(jobRole)}
+              </Typography>
+            )}
+            {location && (
+              <Typography sx={{ fontSize: 11 }}>
+                {capitalize(location)}
+              </Typography>
+            )}
+          </>
+        }
+      />
+
+      <CardContent sx={{ paddingY: 0 }}>
+        <Typography sx={{ fontSize: 14 }} color="text.secondary">
+          Estimated Salary: {salaryCurrencyCode === "USD" ? "$" : "₹"}
+          {minJdSalary || 0} - {maxJdSalary}
+          {salaryCurrencyCode === "₹" ? "LPA" : "K"}
+        </Typography>
+        <div className="job_desc">
+          <h5>About Company:</h5>
+          <p>
+            {jobDetailsFromCompany}
+            <span className="white_gradient" />
           </p>
-          <div className="job_desc">
-            <h5>About Company:</h5>
-            <p>
-              {job.jobDetailsFromCompany}
-              <span className="white_gradient" />
-            </p>
-            <button type="button">Show more</button>
-          </div>
-          <div className="job_exp_container">
-            <h3>Minimum Experience</h3>
-            <h2>{job.minExp} years</h2>
-          </div>
-          <Button
-            variant="contained"
-            style={{ width: "100%", margin: "13px 0 5px 0" }}
+          <button type="button">Show more</button>
+        </div>
+        <CardContent sx={{ paddingX: 0 }}>
+          <Typography
+            sx={{ fontSize: 14, color: "#8b8b8b", fontWeight: [600] }}
           >
-            Easy Apply
-          </Button>
+            Minimum Experience
+          </Typography>
+          <Typography sx={{ fontSize: 14 }} color="text.secondary">
+            {minExp ? minExp + " Years" : "Fresher"}
+          </Typography>
         </CardContent>
-      </Card>
-    </Paper>
+        <CardActions sx={{ paddingBottom: 0, paddingX: 0 }}>
+          <Box sx={{ width: "100%" }}>
+            <ApplyButton variant="contained">⚡ Easy Apply</ApplyButton>
+            <ReferralButton variant="contained">
+              <Avatar
+                sx={{ width: 24, height: 24 }}
+                src={"/avatar-fallback.svg"}
+              />
+              Ask for referral
+            </ReferralButton>
+          </Box>
+        </CardActions>
+      </CardContent>
+    </StyledCard>
   );
 };
 

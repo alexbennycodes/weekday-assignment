@@ -1,4 +1,5 @@
 import { Box, CircularProgress, Grid } from "@mui/material";
+import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import JobCard from "../../components/JobCard";
 import Select from "../../components/Select";
@@ -19,7 +20,6 @@ import {
   selectStatus,
   selectTotalCount,
 } from "./jobSlice";
-import { useEffect, useState } from "react";
 
 const Job = () => {
   const jobList = useAppSelector(selectJob);
@@ -187,7 +187,7 @@ const Job = () => {
           isSearchable
           isClearable
           placeholder="Minimum Base Pay Salary"
-          onChange={(e) =>
+          onChange={(e: { label: "string"; value: number }) =>
             setFilter((prev) => ({
               ...prev,
               minBasePay: e?.value || null,
@@ -205,10 +205,20 @@ const Job = () => {
           }}
         />
       </Box>
-      <Grid container spacing={2} columns={{ xs: 4, sm: 8, md: 12 }}>
+      <Grid container spacing={4} columns={{ xs: 4, sm: 8, md: 12 }}>
         {filteredJobList.map((job: JobDetailsType) => (
-          <Grid item xs={4} sm={4} md={4}>
-            <JobCard job={job} />
+          <Grid item xs={4} sm={4} md={4} key={job.jdUid}>
+            <JobCard
+              companyName={job.companyName}
+              jobDetailsFromCompany={job.jobDetailsFromCompany}
+              jobRole={job.jobRole}
+              location={job.location}
+              logoUrl={job.logoUrl}
+              maxJdSalary={job.maxJdSalary}
+              minExp={job.minExp}
+              minJdSalary={job.minJdSalary}
+              salaryCurrencyCode={job.salaryCurrencyCode}
+            />
           </Grid>
         ))}
         <div ref={observerTarget}></div>
