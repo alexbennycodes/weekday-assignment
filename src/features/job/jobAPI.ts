@@ -1,6 +1,6 @@
 export const fetchJobs = async (offset: number) => {
   try {
-    const body = JSON.stringify({ limit: 10, offset });
+    const body = JSON.stringify({ limit: 12, offset });
 
     const response = await fetch(
       "https://api.weekday.technology/adhoc/getSampleJdJSON",

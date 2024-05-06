@@ -32,7 +32,7 @@ export interface JobSliceState {
 
 const initialState: JobSliceState = {
   jobList: [],
-  limit: 10,
+  limit: 12,
   offset: 0,
   totalCount: 0,
   status: "idle",
@@ -54,7 +54,7 @@ export const jobSlice = createAppSlice({
       state.status = payload;
     }),
     incrementOffset: create.reducer((state) => {
-      state.offset += 10;
+      state.offset += 12;
     }),
   }),
 

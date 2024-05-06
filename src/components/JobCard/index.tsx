@@ -24,8 +24,9 @@ const JobCard = ({ job }: { job: JobDetailsType }) => {
             </div>
           </Box>
           <p className="card_salary">
-            Estimated Salary: ${job.salaryCurrencyCode}
-            {job.minJdSalary} - {job.maxJdSalary} LPA
+            Estimated Salary: {job.salaryCurrencyCode === "USD" ? "$" : "₹"}{" "}
+            {job.minJdSalary || 0} - {job.maxJdSalary}
+            {job.salaryCurrencyCode === "₹" ? "LPA" : "K"}
           </p>
           <div className="job_desc">
             <h5>About Company:</h5>
