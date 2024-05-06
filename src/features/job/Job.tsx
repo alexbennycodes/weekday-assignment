@@ -41,17 +41,20 @@ const Job = () => {
 
   useEffect(() => {
     const list = jobList.filter((job) => {
+      // Filter by role
       if (filter.roles.length > 0 && !filter.roles.includes(job.jobRole)) {
         return false;
       }
 
-      if (
-        filter.noOfEmployees.length > 0 &&
-        !filter.noOfEmployees.includes(job.noOfEmployees)
-      ) {
-        return false;
-      }
+      // TODO: no of Employees data is not available
+      // if (
+      //   filter.noOfEmployees.length > 0 &&
+      //   !filter.noOfEmployees.includes(job.noOfEmployees)
+      // ) {
+      //   return false;
+      // }
 
+      // Filter by experience
       if (
         filter.experience !== null &&
         (job.minExp > filter.experience || job.maxExp < filter.experience)
@@ -59,21 +62,33 @@ const Job = () => {
         return false;
       }
 
-      if (filter.remote.length > 0 && !filter.remote.includes(job.location)) {
-        return false;
+      // Filter by remote
+      if (filter.remote.length > 0) {
+        // generate the locationType and then check if its included in the filter
+        let locationType = "";
+        if (job.location === "remote") locationType = "remote";
+        else if (job.location === "hybrid") locationType = "hybrid";
+        else locationType = "inOffice";
+        if (!filter.remote.includes(locationType)) {
+          return false;
+        }
       }
 
-      if (
-        filter.techStack.length > 0 &&
-        !filter.techStack.every((stack) => job.techStack.includes(stack))
-      ) {
-        return false;
-      }
+      // TODO: techStack data is not available
+      // if (
+      //   filter.techStack.length > 0 &&
+      //   !filter.techStack.every((stack) => job.techStack.includes(stack))
+      // ) {
+      //   return false;
+      // }
 
+      // Filter by min base pay
+      //? could be improved based on the currenyCode
       if (filter.minBasePay !== null && job.minJdSalary < filter.minBasePay) {
         return false;
       }
 
+      // Filter by company name
       if (
         filter.searchTerm !== "" &&
         !job.companyName.toLowerCase().includes(filter.searchTerm.toLowerCase())
