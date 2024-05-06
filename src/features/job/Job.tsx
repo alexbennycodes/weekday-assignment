@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import JobCard from "../../components/JobCard";
 import Select from "../../components/Select";
+import Input from "../../components/Input";
 import useInfiniteScroll from "../../hooks/useInfiniteScroll";
 import {
   EXP_LEVELS_OPTIONS,
@@ -42,14 +43,17 @@ const Job = () => {
   useEffect(() => {
     const list = jobList.filter((job) => {
       // Filter by role
-      if (filter.roles.length > 0 && !filter.roles.includes(job.jobRole)) {
+      if (
+        filter.roles.length > 0 &&
+        !filter.roles.map((option) => option.value).includes(job.jobRole)
+      ) {
         return false;
       }
 
       // TODO: no of Employees data is not available
       // if (
       //   filter.noOfEmployees.length > 0 &&
-      //   !filter.noOfEmployees.includes(job.noOfEmployees)
+      //   !filter.noOfEmployees.map((option) => option.value).includes(job.noOfEmployees)
       // ) {
       //   return false;
       // }
@@ -57,7 +61,8 @@ const Job = () => {
       // Filter by experience
       if (
         filter.experience !== null &&
-        (job.minExp > filter.experience || job.maxExp < filter.experience)
+        (job.minExp > filter.experience.value ||
+          job.maxExp < filter.experience.value)
       ) {
         return false;
       }
@@ -69,7 +74,9 @@ const Job = () => {
         if (job.location === "remote") locationType = "remote";
         else if (job.location === "hybrid") locationType = "hybrid";
         else locationType = "inOffice";
-        if (!filter.remote.includes(locationType)) {
+        if (
+          !filter.remote.map((option) => option.value).includes(locationType)
+        ) {
           return false;
         }
       }
@@ -77,14 +84,17 @@ const Job = () => {
       // TODO: techStack data is not available
       // if (
       //   filter.techStack.length > 0 &&
-      //   !filter.techStack.every((stack) => job.techStack.includes(stack))
+      //   !filter.techStack.map((option) => option.value).every((stack) => job.techStack.includes(stack))
       // ) {
       //   return false;
       // }
 
       // Filter by min base pay
       //? could be improved based on the currenyCode
-      if (filter.minBasePay !== null && job.minJdSalary < filter.minBasePay) {
+      if (
+        filter.minBasePay !== null &&
+        job.minJdSalary < filter.minBasePay?.value
+      ) {
         return false;
       }
 
@@ -111,7 +121,15 @@ const Job = () => {
 
   return (
     <div>
-      <Box sx={{ display: "flex", gap: "5px", marginBottom: "1rem" }}>
+      <Box
+        sx={{
+          display: "flex",
+          gap: "8px",
+          marginBottom: "1rem",
+          flexWrap: "wrap",
+          minHeight: "55px",
+        }}
+      >
         <Select
           options={ROLES_OPTIONS}
           isSearchable
@@ -127,9 +145,11 @@ const Job = () => {
           onChange={(e) =>
             setFilter((prev) => ({
               ...prev,
-              roles: e.map((option) => option.value),
+              roles: e,
             }))
           }
+          value={filter.roles}
+          label="Roles"
         />
         <Select
           options={NUMBER_OF_EMPLOYEES_OPTIONS}
@@ -140,9 +160,11 @@ const Job = () => {
           onChange={(e) =>
             setFilter((prev) => ({
               ...prev,
-              noOfEmployees: e.map((option) => option.value),
+              noOfEmployees: e,
             }))
           }
+          value={filter.noOfEmployees}
+          label="No of employees"
         />
         <Select
           options={EXP_LEVELS_OPTIONS}
@@ -152,9 +174,11 @@ const Job = () => {
           onChange={(e) =>
             setFilter((prev) => ({
               ...prev,
-              experience: e?.value || null,
+              experience: e,
             }))
           }
+          value={filter.experience}
+          label="Experience"
         />
         <Select
           options={REMOTE_OPTIONS}
@@ -165,9 +189,11 @@ const Job = () => {
           onChange={(e) =>
             setFilter((prev) => ({
               ...prev,
-              remote: e.map((option) => option.value),
+              remote: e,
             }))
           }
+          value={filter.remote}
+          label="Remote"
         />
         <Select
           options={TECH_STACK_OPTIONS}
@@ -178,9 +204,11 @@ const Job = () => {
           onChange={(e) =>
             setFilter((prev) => ({
               ...prev,
-              techStack: e.map((option) => option.value),
+              techStack: e,
             }))
           }
+          value={filter.techStack}
+          label="Tech Stack"
         />
         <Select
           options={MIN_BASE_OPTIONS}
@@ -190,19 +218,19 @@ const Job = () => {
           onChange={(e: { label: "string"; value: number }) =>
             setFilter((prev) => ({
               ...prev,
-              minBasePay: e?.value || null,
+              minBasePay: e,
             }))
           }
+          value={filter.minBasePay}
+          label="Min Base Pay"
         />
-        <input
+        <Input
           placeholder="Search Company Name"
-          style={{
-            fontSize: "12px",
-            fontWeight: 300,
-            padding: "2px 8px",
-            border: "1px solid rgb(205, 205, 205)",
-            borderRadius: "4px",
-          }}
+          label="Company Name"
+          value={filter.searchTerm}
+          onChange={(e) =>
+            setFilter((prev) => ({ ...prev, searchTerm: e.target.value }))
+          }
         />
       </Box>
       <Grid container spacing={4} columns={{ xs: 4, sm: 8, md: 12 }}>
@@ -221,7 +249,9 @@ const Job = () => {
             />
           </Grid>
         ))}
-        <div ref={observerTarget}></div>
+        <Grid item xs={4} sm={4} md={4}>
+          <div ref={observerTarget}></div>
+        </Grid>
         {status === "loading" && (
           <Grid item xs={4} sm={8} md={12}>
             <Box
