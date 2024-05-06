@@ -12,7 +12,7 @@ import Input from "../Input";
 import Select from "../Select";
 
 const JobsFilter = ({ setFilter, filter }) => {
-  const debouncedHandleSearch = debounce((searchTerm) => {
+  const debouncedHandleSearch = debounce((searchTerm: string) => {
     setFilter((prev) => ({ ...prev, searchTerm }));
   });
 
@@ -124,7 +124,9 @@ const JobsFilter = ({ setFilter, filter }) => {
         placeholder="Search Company Name"
         label="Company Name"
         value={filter.searchTerm}
-        onChange={(e) => debouncedHandleSearch(e.target.value)}
+        onChange={(e: ChangeEvent<HTMLInputElement>) =>
+          debouncedHandleSearch(e.target.value)
+        }
       />
     </Box>
   );

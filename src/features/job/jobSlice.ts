@@ -1,7 +1,7 @@
 import { createAppSlice } from "../../app/createAppSlice";
 import { fetchJobs } from "./jobAPI";
 
-const STATUS = {
+export const STATUS = {
   IDLE: "idle",
   LOADING: "loading",
   FAILED: "failed",

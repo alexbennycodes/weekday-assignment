@@ -5,14 +5,16 @@ type CallbackFunction = () => void;
 const useInfiniteScroll = (
   callback: CallbackFunction,
   isLoading: boolean,
-  hasMore: boolean
+  hasMore: boolean,
+  stop: boolean
 ): React.MutableRefObject<HTMLDivElement | null> => {
   const observerTarget = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    const target = observerTarget.current;
     const observer = new IntersectionObserver(
       (entries) => {
-        if (isLoading || !hasMore) return;
+        if (isLoading || !hasMore || stop) return;
         if (entries[0].isIntersecting) {
           callback();
         }
@@ -20,16 +22,16 @@ const useInfiniteScroll = (
       { threshold: 1 }
     );
 
-    if (observerTarget.current) {
-      observer.observe(observerTarget.current);
+    if (target) {
+      observer.observe(target);
     }
 
     return () => {
-      if (observerTarget.current) {
-        observer.unobserve(observerTarget.current);
+      if (target) {
+        observer.unobserve(target);
       }
     };
-  }, [observerTarget, callback, isLoading, hasMore]);
+  }, [observerTarget, callback, isLoading, hasMore, stop]);
 
   return observerTarget;
 };

@@ -1,17 +1,29 @@
-import { Box, CircularProgress, Grid } from "@mui/material";
-import { useEffect, useState } from "react";
+import { Alert, Box, CircularProgress, Grid } from "@mui/material";
+import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import JobCard from "../../components/JobCard";
 import JobsFilter from "../../components/JobsFilter";
 import useInfiniteScroll from "../../hooks/useInfiniteScroll";
+import { filterJobs } from "../../utils/filterJobs";
 import {
   JobDetailsType,
+  STATUS,
   getJob,
   selectJob,
   selectOffset,
   selectStatus,
   selectTotalCount,
 } from "./jobSlice";
+
+export interface JobFilter {
+  roles: { value: string; label: string }[];
+  noOfEmployees: { value: string; label: string }[];
+  experience: { value: number; label: string } | null;
+  remote: { value: string; label: string }[];
+  techStack: { value: string; label: string }[];
+  minBasePay: { value: number; label: string } | null;
+  searchTerm: string;
+}
 
 const Job = () => {
   const jobList = useAppSelector(selectJob);
@@ -20,8 +32,7 @@ const Job = () => {
   const totalCount = useAppSelector(selectTotalCount);
   const dispatch = useAppDispatch();
 
-  const [filteredJobList, setFilteredJobList] = useState([...jobList]);
-  const [filter, setFilter] = useState({
+  const [filter, setFilter] = useState<JobFilter>({
     roles: [],
     noOfEmployees: [],
     experience: null,
@@ -31,95 +42,30 @@ const Job = () => {
     searchTerm: "",
   });
 
-  useEffect(() => {
-    const list = jobList.filter((job) => {
-      // Filter by role
-      if (
-        filter.roles.length > 0 &&
-        !filter.roles.map((option) => option.value).includes(job.jobRole)
-      ) {
-        return false;
-      }
-
-      // TODO: no of Employees data is not available
-      // if (
-      //   filter.noOfEmployees.length > 0 &&
-      //   !filter.noOfEmployees.map((option) => option.value).includes(job.noOfEmployees)
-      // ) {
-      //   return false;
-      // }
-
-      // Filter by experience
-      if (
-        filter.experience !== null &&
-        (job?.minExp > filter.experience.value ||
-          job?.maxExp < filter.experience.value)
-      ) {
-        return false;
-      }
-
-      // Filter by remote
-      if (filter.remote.length > 0) {
-        // generate the locationType and then check if its included in the filter
-        let locationType = "";
-        if (job.location === "remote") locationType = "remote";
-        else if (job.location === "hybrid") locationType = "hybrid";
-        else locationType = "inOffice";
-        if (
-          !filter.remote.map((option) => option.value).includes(locationType)
-        ) {
-          return false;
-        }
-      }
-
-      // TODO: techStack data is not available
-      // if (
-      //   filter.techStack.length > 0 &&
-      //   !filter.techStack.map((option) => option.value).every((stack) => job.techStack.includes(stack))
-      // ) {
-      //   return false;
-      // }
-
-      // Filter by min base pay
-      //? could be improved based on the currenyCode
-      if (
-        filter.minBasePay !== null &&
-        job.minJdSalary < filter.minBasePay?.value
-      ) {
-        return false;
-      }
-
-      // Filter by company name
-      if (
-        filter.searchTerm !== "" &&
-        !job.companyName.toLowerCase().includes(filter.searchTerm.toLowerCase())
-      ) {
-        return false;
-      }
-
-      return true;
-    });
-    setFilteredJobList(list);
-  }, [jobList, filter]);
-
   const observerTarget = useInfiniteScroll(
     () => {
       dispatch(getJob(offset));
     },
-    status === "loading",
-    totalCount === 0 ? true : totalCount > jobList.length
+    status === STATUS.LOADING,
+    totalCount === 0 ? true : totalCount > jobList.length,
+    status === STATUS.FAILED
   );
 
   return (
     <div>
       <JobsFilter setFilter={setFilter} filter={filter} />
+      {status === STATUS.FAILED && (
+        <Alert variant="filled" severity="error">
+          Error occurred while fetching jobs. Try again later.
+        </Alert>
+      )}
       <Grid
         container
         spacing={4}
         columns={{ xs: 4, sm: 8, md: 12 }}
         sx={{ paddingY: 5 }}
       >
-        {filteredJobList.map((job: JobDetailsType) => (
+        {filterJobs(filter, jobList).map((job: JobDetailsType) => (
           <Grid item xs={4} sm={4} md={4} key={job.jdUid}>
             <JobCard
               companyName={job.companyName}
@@ -134,13 +80,11 @@ const Job = () => {
             />
           </Grid>
         ))}
-        <Grid item xs={4} sm={4} md={4}>
-          <div ref={observerTarget}></div>
-        </Grid>
-        {status === "loading" && (
+
+        {status === STATUS.LOADING ? (
           <Grid item xs={4} sm={8} md={12}>
             <Box
-              height={250}
+              height={500}
               sx={{
                 display: "flex",
                 justifyContent: "center",
@@ -149,6 +93,11 @@ const Job = () => {
             >
               <CircularProgress />
             </Box>
+          </Grid>
+        ) : (
+          <Grid item xs={4} sm={4} md={4}>
+            {/* Intersection Observer Target */}
+            <div ref={observerTarget}></div>
           </Grid>
         )}
       </Grid>
